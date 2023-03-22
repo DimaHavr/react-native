@@ -17,22 +17,21 @@ const initialState = {
   password: "",
 };
 export default function LoginScreen() {
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
-  const keyboardHide = () => {
-    setIsShowKeyboard(false);
+  const handleSubmit = () => {
+    const { password, email } = state;
+    if (!email || !password) {
+      alert("Пожалуйста, заполните все поля.");
+      return;
+    }
     Keyboard.dismiss();
-  };
-
-  const submitFormBtn = () => {
     setState(initialState);
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
+    console.log(state);
   };
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
         style={styles.backgroundImage}
         source={require("../../assets/images/photo_bg.png")}
@@ -45,24 +44,19 @@ export default function LoginScreen() {
             <Text style={styles.headerTitle}>Войти</Text>
             <View style={styles.form}>
               <TextInput
-                onEndEditing={() => setIsShowKeyboard(false)}
                 placeholder="Адрес электронной почты"
                 style={styles.input}
                 name="email"
-                onFocus={() => setIsShowKeyboard(true)}
                 value={state.email}
-                // onChange={(nativeEvent) => console.log(nativeEvent)}
                 onChangeText={(value) =>
                   setState((prevState) => ({ ...prevState, email: value }))
                 }
               />
               <TextInput
-                onEndEditing={() => setIsShowKeyboard(false)}
                 placeholder="Пароль"
                 style={styles.input}
                 secureTextEntry={true}
                 name="password"
-                onFocus={() => setIsShowKeyboard(true)}
                 value={state.password}
                 onChangeText={(value) =>
                   setState((prevState) => ({
@@ -78,7 +72,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               activeOpacity={0.5}
               style={styles.btn}
-              onPress={submitFormBtn}
+              onPress={handleSubmit}
             >
               <Text style={styles.btnText}>Войти</Text>
             </TouchableOpacity>
@@ -111,7 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 16,
-    gap: 16,
   },
 
   inputPassText: {
@@ -135,10 +128,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#f6f6f6",
     paddingLeft: 16,
-    color: "#BDBDBD",
+    color: "#212121",
     textAlign: "left",
     fontSize: 16,
     lineHeight: 19,
+    marginBottom: 16,
   },
 
   btn: {

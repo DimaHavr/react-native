@@ -19,18 +19,21 @@ const initialState = {
   password: "",
 };
 export default function RegistrationScreen() {
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
   const keyboardHide = () => {
-    setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
-  const submitFormBtn = () => {
-    setState(initialState);
-    setIsShowKeyboard(false);
+  const handleSubmit = () => {
+    const { login, password, email } = state;
+    if (!login || !password || !email) {
+      alert("Пожалуйста, заполните все поля.");
+      return;
+    }
     Keyboard.dismiss();
+    setState(initialState);
+    console.log(state);
   };
 
   return (
@@ -41,47 +44,34 @@ export default function RegistrationScreen() {
       >
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS == "ios" ? -180 : -70}
+          keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -70}
         >
-          <View
-            style={{
-              ...styles.container,
-              // marginBottom: isShowKeyboard ? -180 : 0,
-            }}
-          >
+          <View style={styles.container}>
             <Text style={styles.headerTitle}>Регистрация</Text>
             <View style={styles.form}>
               <TextInput
-                onEndEditing={() => setIsShowKeyboard(false)}
                 placeholder="Логин"
                 style={styles.input}
                 name="login"
-                onFocus={() => setIsShowKeyboard(true)}
                 value={state.login}
-                // onChange={(nativeEvent) => console.log(nativeEvent)}
                 onChangeText={(value) =>
                   setState((prevState) => ({ ...prevState, login: value }))
                 }
               />
               <TextInput
-                onEndEditing={() => setIsShowKeyboard(false)}
                 placeholder="Адрес электронной почты"
                 style={styles.input}
                 name="email"
-                onFocus={() => setIsShowKeyboard(true)}
                 value={state.email}
-                // onChange={(nativeEvent) => console.log(nativeEvent)}
                 onChangeText={(value) =>
                   setState((prevState) => ({ ...prevState, email: value }))
                 }
               />
               <TextInput
-                onEndEditing={() => setIsShowKeyboard(false)}
                 placeholder="Пароль"
                 name="password"
                 style={styles.input}
                 secureTextEntry={true}
-                onFocus={() => setIsShowKeyboard(true)}
                 value={state.password}
                 onChangeText={(value) =>
                   setState((prevState) => ({
@@ -97,7 +87,7 @@ export default function RegistrationScreen() {
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.btn}
-              onPress={submitFormBtn}
+              onPress={handleSubmit}
             >
               <Text style={styles.btnText}>Зарегистрироваться</Text>
             </TouchableOpacity>
@@ -146,12 +136,11 @@ const styles = StyleSheet.create({
     bottom: 5,
   },
   form: {
+    position: "relative",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 16,
-    gap: 16,
-    position: "relative",
   },
 
   inputPassText: {
@@ -175,9 +164,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#f6f6f6",
     paddingLeft: 16,
-    color: "#BDBDBD",
+    color: "#212121",
     textAlign: "left",
     fontSize: 16,
+    marginBottom: 16,
     lineHeight: 19,
   },
 
