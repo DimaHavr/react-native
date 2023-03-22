@@ -21,10 +21,6 @@ const initialState = {
 export default function RegistrationScreen() {
   const [state, setState] = useState(initialState);
 
-  const keyboardHide = () => {
-    Keyboard.dismiss();
-  };
-
   const handleSubmit = () => {
     const { login, password, email } = state;
     if (!login || !password || !email) {
@@ -37,7 +33,7 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
         style={styles.backgroundImage}
         source={require("../../assets/images/photo_bg.png")}
