@@ -18,6 +18,11 @@ const initialState = {
 };
 export default function LoginScreen() {
   const [state, setState] = useState(initialState);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prevState) => !prevState);
+  };
 
   const handleSubmit = () => {
     const { password, email } = state;
@@ -55,7 +60,7 @@ export default function LoginScreen() {
               <TextInput
                 placeholder="Пароль"
                 style={styles.input}
-                secureTextEntry={true}
+                secureTextEntry={isPasswordVisible}
                 name="password"
                 value={state.password}
                 onChangeText={(value) =>
@@ -65,8 +70,13 @@ export default function LoginScreen() {
                   }))
                 }
               />
-              <TouchableOpacity activeOpacity={0.8}>
-                <Text style={styles.inputPassText}>Показать</Text>
+              <TouchableOpacity
+                onPress={togglePasswordVisibility}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.inputPassText}>
+                  {!isPasswordVisible ? "Скрыть" : "Показать"}
+                </Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity

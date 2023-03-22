@@ -20,6 +20,11 @@ const initialState = {
 };
 export default function RegistrationScreen() {
   const [state, setState] = useState(initialState);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prevState) => !prevState);
+  };
 
   const handleSubmit = () => {
     const { login, password, email } = state;
@@ -67,7 +72,7 @@ export default function RegistrationScreen() {
                 placeholder="Пароль"
                 name="password"
                 style={styles.input}
-                secureTextEntry={true}
+                secureTextEntry={isPasswordVisible}
                 value={state.password}
                 onChangeText={(value) =>
                   setState((prevState) => ({
@@ -76,8 +81,13 @@ export default function RegistrationScreen() {
                   }))
                 }
               />
-              <TouchableOpacity activeOpacity={0.8}>
-                <Text style={styles.inputPassText}>Показать</Text>
+              <TouchableOpacity
+                onPress={togglePasswordVisibility}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.inputPassText}>
+                  {!isPasswordVisible ? "Скрыть" : "Показать"}
+                </Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
