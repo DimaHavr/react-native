@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import MapIcon from "react-native-vector-icons/Feather";
 import DeleteIcon from "react-native-vector-icons/AntDesign";
+import PhotoIcon from "react-native-vector-icons/MaterialIcons";
 
 export default function CreatePostsScreen() {
   return (
@@ -23,6 +24,14 @@ export default function CreatePostsScreen() {
             <Image style={styles.postImg} />
             <TouchableOpacity activeOpacity={0.6}>
               <Text style={styles.textImg}>Загрузите фото</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.photoIconBox}>
+              <PhotoIcon
+                style={styles.photoIcon}
+                name="photo-camera"
+                size={25}
+                color="#BDBDBD"
+              />
             </TouchableOpacity>
           </View>
           <KeyboardAvoidingView
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   postImg: {
-    backgroundColor: "#212121",
+    backgroundColor: "#E8E8E8",
     width: "100%",
     height: 240,
     borderRadius: 8,
@@ -129,5 +138,20 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: "auto",
     marginBottom: 15,
+  },
+  photoIconBox: {
+    position: "absolute",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    width: 60,
+    height: 60,
+    bottom: 120,
+    left: 145,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  photoIcon: {
+    alignSelf: "center",
   },
 });
