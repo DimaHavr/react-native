@@ -6,6 +6,7 @@ import { useRoute } from "./router";
 
 export default function App() {
   const routing = useRoute(true);
+  // Щоб перейти на сторінку реєстрації, потрбно змінити значення на null !!!!!!!
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
