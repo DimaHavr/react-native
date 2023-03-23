@@ -16,7 +16,7 @@ const initialState = {
   email: "",
   password: "",
 };
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
@@ -33,6 +33,7 @@ export default function LoginScreen() {
     Keyboard.dismiss();
     setState(initialState);
     console.log(state);
+    navigation.navigate("Posts");
   };
 
   return (
@@ -86,9 +87,14 @@ export default function LoginScreen() {
             >
               <Text style={styles.btnText}>Войти</Text>
             </TouchableOpacity>
-            <Text style={styles.bottomText}>
-              Нет аккаунта? Зарегистрироваться
-            </Text>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => navigation.navigate("Registration")}
+            >
+              <Text style={styles.bottomText}>
+                Нет аккаунта? Зарегистрироваться
+              </Text>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </ImageBackground>

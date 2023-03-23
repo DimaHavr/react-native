@@ -18,7 +18,7 @@ const initialState = {
   email: "",
   password: "",
 };
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
@@ -35,6 +35,7 @@ export default function RegistrationScreen() {
     Keyboard.dismiss();
     setState(initialState);
     console.log(state);
+    navigation.navigate("Home");
   };
 
   return (
@@ -97,7 +98,13 @@ export default function RegistrationScreen() {
             >
               <Text style={styles.btnText}>Зарегистрироваться</Text>
             </TouchableOpacity>
-            <Text style={styles.bottomText}>Уже есть аккаунт? Войти</Text>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.bottomText}>Уже есть аккаунт? Войти</Text>
+            </TouchableOpacity>
+
             <View style={styles.imgBox}>
               <Icon
                 style={styles.icon}
