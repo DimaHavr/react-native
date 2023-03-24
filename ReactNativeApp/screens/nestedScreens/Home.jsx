@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,81 +6,91 @@ import {
   TouchableOpacity,
   Platform,
   Image,
+  FlatList,
 } from "react-native";
 import MapIcon from "react-native-vector-icons/Feather";
 import CommentsIcon from "react-native-vector-icons/Fontisto";
 
-export default function Home({ navigation }) {
+export default function Home({ navigation, route }) {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    if (route.params) {
+      setPosts((prevState) => [...prevState, route.params]);
+    }
+  }, [route.params]);
+
   return (
     <View style={styles.container}>
       <View>
-        <View style={styles.userBox}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.userBox}
+          onPress={() => navigation.navigate("Profile")}
+        >
           <Image style={styles.userImg} />
           <View>
             <Text style={styles.userName}>Natali Romanova</Text>
             <Text>email@example.com</Text>
           </View>
-        </View>
-        <View style={styles.postsBox}>
-          <Image style={styles.postImg} />
-          <Text style={styles.textTitle}>Title</Text>
-          <View style={styles.infoBox}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Comments")}
-              style={styles.textInfoBox}
-            >
-              <CommentsIcon
-                style={{ transform: [{ scaleX: -1 }], marginRight: 6 }}
-                name="comment"
-                size={25}
-                color="#BDBDBD"
-              />
-              <Text style={{ ...styles.userName, color: "#BDBDBD" }}>0</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.textInfoBox}>
-              <MapIcon
-                style={{ marginRight: 6 }}
-                name="map-pin"
-                size={25}
-                color="#BDBDBD"
-              />
-              <Text
-                style={{ ...styles.textInfo, textDecorationLine: "underline" }}
-              >
-                Ivano-Frankivs'k Region, Ukraine
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.postsBox}>
-          <Image style={styles.postImg} />
-          <Text style={styles.textTitle}>Title</Text>
-          <View style={styles.infoBox}>
-            <TouchableOpacity style={styles.textInfoBox}>
-              <CommentsIcon
-                style={{ transform: [{ scaleX: -1 }], marginRight: 6 }}
-                name="comment"
-                size={25}
-                color="#BDBDBD"
-              />
-              <Text style={{ ...styles.userName, color: "#BDBDBD" }}>0</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.textInfoBox}>
-              <MapIcon
-                style={{ marginRight: 6 }}
-                name="map-pin"
-                size={25}
-                color="#BDBDBD"
-              />
-              <Text
-                style={{ ...styles.textInfo, textDecorationLine: "underline" }}
-              >
-                Ivano-Frankivs'k Region, Ukraine
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </TouchableOpacity>
       </View>
+      <FlatList
+        data={posts}
+        keyExtractor={(item, indx) => indx.toString()}
+        renderItem={({ item }) => (
+          <View>
+            <View style={styles.postsBox}>
+              <Image source={{ uri: item.photo }} style={styles.postImg} />
+              <Text style={styles.textTitle}>{item.title}</Text>
+              <View style={styles.infoBox}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => navigation.navigate("Comments")}
+                  style={styles.textInfoBox}
+                >
+                  <CommentsIcon
+                    style={{ transform: [{ scaleX: -1 }], paddingRight: 6 }}
+                    name="comment"
+                    size={25}
+                    color="#BDBDBD"
+                  />
+                  <Text
+                    style={{
+                      ...styles.userName,
+                      color: "#BDBDBD",
+                      paddingLeft: 6,
+                    }}
+                  >
+                    0
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() =>
+                    navigation.navigate("Map", { location: item.location })
+                  }
+                  style={{ ...styles.textInfoBox, paddingLeft: 10 }}
+                >
+                  <MapIcon
+                    style={{ marginRight: 6 }}
+                    name="map-pin"
+                    size={25}
+                    color="#BDBDBD"
+                  />
+                  <Text
+                    style={{
+                      ...styles.textInfo,
+                      textDecorationLine: "underline",
+                    }}
+                  >
+                    {item.locationName}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+      />
     </View>
   );
 }
@@ -100,6 +110,7 @@ const styles = StyleSheet.create({
   userBox: {
     marginLeft: 16,
     marginTop: 32,
+    marginBottom: 32,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
   },
   postsBox: {
     marginHorizontal: 16,
-    marginTop: 32,
+    marginBottom: 16,
   },
   postImg: {
     backgroundColor: "#212121",
@@ -144,11 +155,13 @@ const styles = StyleSheet.create({
   textInfoBox: {
     flexDirection: "row",
     alignItems: "center",
+    flexShrink: 1,
   },
   textInfo: {
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
+    flexShrink: 1,
   },
 });

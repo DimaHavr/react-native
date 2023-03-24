@@ -1,18 +1,27 @@
 import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import { StyleSheet } from "react-native";
 
-export default function MapScreen() {
-  return <View style={styles.container}></View>;
+export default function MapScreen({ route }) {
+  const { latitude, longitude } = route.params.location;
+
+  return (
+    <MapView
+      style={styles.container}
+      initialRegion={{
+        latitude,
+        longitude,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
+      }}
+    >
+      <Marker coordinate={{ latitude, longitude }} />
+    </MapView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#ffffff",
+    flex: 1,
   },
 });

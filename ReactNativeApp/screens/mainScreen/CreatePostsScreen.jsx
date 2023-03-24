@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Camera } from "expo-camera";
+import * as Location from "expo-location";
+import { ActivityIndicator } from "react-native";
+
 import {
   StyleSheet,
   Text,
@@ -15,25 +19,92 @@ import MapIcon from "react-native-vector-icons/Feather";
 import DeleteIcon from "react-native-vector-icons/AntDesign";
 import PhotoIcon from "react-native-vector-icons/MaterialIcons";
 
-export default function CreatePostsScreen() {
+export default function CreatePostsScreen({ navigation }) {
+  const [isTakingPicture, setIsTakingPicture] = useState(false);
+  const [photo, setPhoto] = useState(null);
+  const [title, setTitle] = useState("");
+  const [locationName, setLocationName] = useState({});
+  const [location, setLocation] = useState({});
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const cameraRef = useRef();
+  const takePhoto = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    try {
+      if (cameraRef.current) {
+        setIsTakingPicture(true);
+        const options = { quality: 1.0, base64: true, skipProcessing: true };
+        const data = await cameraRef.current.takePictureAsync(options);
+        const source = data.uri;
+        if (source) {
+          const location = await Location.getCurrentPositionAsync();
+          const coordsMap = location.coords;
+          setPhoto(source);
+          setLocation(coordsMap);
+          setIsTakingPicture(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onCameraReady = () => {
+    setIsCameraReady(true);
+  };
+  const postParams = photo && title && locationName;
+  const sendPost = () => {
+    if (postParams) {
+      navigation.navigate("Home", { photo, title, locationName, location });
+      setPhoto(null);
+      setTitle("");
+      setLocationName("");
+      return;
+    }
+    return;
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={{ marginHorizontal: 16, marginTop: 32 }}>
-          <View>
-            <Image style={styles.postImg} />
-            <TouchableOpacity activeOpacity={0.6}>
-              <Text style={styles.textImg}>Загрузите фото</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.photoIconBox}>
-              <PhotoIcon
-                style={styles.photoIcon}
-                name="photo-camera"
-                size={25}
-                color="#BDBDBD"
-              />
-            </TouchableOpacity>
-          </View>
+          {photo ? (
+            <Image source={{ uri: photo }} style={styles.postImg} />
+          ) : (
+            <Camera
+              style={styles.camera}
+              ref={cameraRef}
+              onCameraReady={onCameraReady}
+            >
+              {isTakingPicture ? (
+                <ActivityIndicator
+                  style={styles.photoIconBox}
+                  size="large"
+                  color="#ffffff"
+                />
+              ) : (
+                <TouchableOpacity
+                  disabled={!isCameraReady}
+                  style={styles.photoIconBox}
+                  onPress={takePhoto}
+                >
+                  <PhotoIcon
+                    style={styles.photoIcon}
+                    name="photo-camera"
+                    size={25}
+                    color="#fffffd"
+                  />
+                </TouchableOpacity>
+              )}
+            </Camera>
+          )}
+
+          <TouchableOpacity activeOpacity={0.6}>
+            <Text style={styles.textImg}>Редактировать фото</Text>
+          </TouchableOpacity>
+
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -70}
@@ -42,12 +113,16 @@ export default function CreatePostsScreen() {
               <TextInput
                 placeholder="Название..."
                 style={styles.input}
-                name="login"
+                name="title"
+                value={title}
+                onChangeText={(value) => setTitle(value)}
               />
               <TextInput
                 placeholder="Местность..."
                 style={{ ...styles.input, paddingLeft: 30 }}
-                name="email"
+                name="locationName"
+                value={locationName}
+                onChangeText={(value) => setLocationName(value)}
               />
               <MapIcon
                 style={styles.mapIcon}
@@ -56,12 +131,34 @@ export default function CreatePostsScreen() {
                 color="#BDBDBD"
               />
             </View>
-            <TouchableOpacity activeOpacity={0.6} style={styles.btn}>
-              <Text style={styles.btnText}>Опубликовать</Text>
+            <TouchableOpacity
+              disabled={!postParams}
+              onPress={sendPost}
+              activeOpacity={postParams && 0.6}
+              style={
+                postParams
+                  ? { ...styles.btn, backgroundColor: "#FF6C00" }
+                  : { ...styles.btn }
+              }
+            >
+              <Text
+                style={
+                  postParams
+                    ? { ...styles.btnText, color: "#ffffff" }
+                    : { ...styles.btnText }
+                }
+              >
+                Опубликовать
+              </Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>
-        <TouchableOpacity activeOpacity={0.6} style={styles.iconBox}>
+        <TouchableOpacity
+          disabled={!photo}
+          onPress={() => setPhoto(null)}
+          activeOpacity={0.6}
+          style={styles.iconBox}
+        >
           <DeleteIcon name="delete" size={25} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
@@ -75,7 +172,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   postImg: {
-    backgroundColor: "#E8E8E8",
+    width: "100%",
+    height: 240,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+
+  camera: {
+    position: "relative",
     width: "100%",
     height: 240,
     borderRadius: 8,
@@ -141,15 +245,16 @@ const styles = StyleSheet.create({
   },
   photoIconBox: {
     position: "absolute",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
     borderRadius: 50,
     width: 60,
     height: 60,
-    bottom: 120,
-    left: 145,
+    bottom: 90,
+    left: 150,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
+    zIndex: 100,
   },
   photoIcon: {
     alignSelf: "center",

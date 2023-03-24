@@ -36,7 +36,17 @@ export default function PostsScreen({ navigation }) {
         component={Home}
       />
       <NestedStack.Screen
-        options={{ headerShown: false }}
+        options={{
+          headerTitle: "Местоположение",
+          headerLeft: () => (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate("Home")}
+            >
+              <ArrowIcon style={styles.backArrow} name="arrowleft" size={24} />
+            </TouchableOpacity>
+          ),
+        }}
         name="Map"
         component={MapScreen}
       />
