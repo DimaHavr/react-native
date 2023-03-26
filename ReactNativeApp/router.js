@@ -31,7 +31,7 @@ export const useRoute = (stateChange) => {
   }
   return (
     <MainTab.Navigator
-      initialRouteName="Posts"
+      initialRouteName="Home"
       screenOptions={{
         tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,

@@ -10,7 +10,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Keyboard,
-  TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
 import {
@@ -58,61 +57,63 @@ export default function CommentsScreen({ route }) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -70}
-        >
-          <View style={{ height: "100%" }}>
-            <View style={{ marginHorizontal: 16 }}>
-              <Image source={{ uri: photoLink }} style={styles.postImg} />
-            </View>
-            <SafeAreaView></SafeAreaView>
-            <FlatList
-              data={allComments}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={{ marginHorizontal: 16 }}>
-                  <View style={styles.commentBox}>
-                    <Image style={styles.commentImg} />
-                    <View style={styles.commentTextBox}>
-                      <Text style={styles.commentText}>{item.comment}</Text>
-                      <Text style={styles.dataText}>
-                        {new Date(item.createdAt?.toDate()).toLocaleDateString(
-                          "en-GB"
-                        )}{" "}
-                        |{" "}
-                        {new Date(item.createdAt?.toDate()).toLocaleTimeString(
-                          "en-GB"
-                        )}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-            />
-            <View style={styles.form}>
-              <TextInput
-                placeholder="Комментировать..."
-                style={styles.input}
-                name="title"
-                value={comment}
-                onChangeText={(value) => setComment(value)}
-              />
-              <TouchableOpacity
-                disabled={!comment}
-                onPress={createComment}
-                activeOpacity={0.5}
-                style={styles.icon}
-              >
-                <Icon name="arrowup" size={25} color="#ffffff" />
-              </TouchableOpacity>
-            </View>
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -70}
+      >
+        <View style={{ height: "100%" }}>
+          <View style={{ marginHorizontal: 16 }}>
+            <Image source={{ uri: photoLink }} style={styles.postImg} />
           </View>
-        </KeyboardAvoidingView>
-      </View>
-    </TouchableWithoutFeedback>
+          <SafeAreaView></SafeAreaView>
+          <FlatList
+            data={allComments}
+            style={{
+              marginBottom: 50,
+              marginTop: 32,
+              marginHorizontal: 16,
+              height: "100%",
+            }}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.commentBox}>
+                <Image style={styles.commentImg} />
+                <View style={styles.commentTextBox}>
+                  <Text style={styles.commentText}>{item.comment}</Text>
+                  <Text style={styles.dataText}>
+                    {new Date(item.createdAt?.toDate()).toLocaleDateString(
+                      "en-GB"
+                    )}{" "}
+                    |{" "}
+                    {new Date(item.createdAt?.toDate()).toLocaleTimeString(
+                      "en-GB"
+                    )}
+                  </Text>
+                </View>
+              </View>
+            )}
+          />
+          <View style={styles.form}>
+            <TextInput
+              placeholder="Комментировать..."
+              style={styles.input}
+              name="title"
+              value={comment}
+              onChangeText={(value) => setComment(value)}
+            />
+            <TouchableOpacity
+              disabled={!comment}
+              onPress={createComment}
+              activeOpacity={0.5}
+              style={styles.icon}
+            >
+              <Icon name="arrowup" size={25} color="#ffffff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -127,7 +128,6 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 8,
     marginTop: 32,
-    marginBottom: 32,
   },
   commentBox: {
     flexDirection: "row",

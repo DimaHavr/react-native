@@ -1,4 +1,5 @@
 import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { authSignOutUser } from "../../redux/auth/authOperations";
 
@@ -16,7 +17,9 @@ import CommentsScreen from "../nestedScreens/CommentsScreen";
 import ArrowIcon from "react-native-vector-icons/AntDesign";
 import LogOutIcon from "react-native-vector-icons/MaterialIcons";
 
-export default function PostsScreen({ navigation }) {
+export default function PostsScreen() {
+  const navigation = useNavigation();
+
   const dispatch = useDispatch();
   const signOut = () => {
     dispatch(authSignOutUser());
@@ -41,7 +44,9 @@ export default function PostsScreen({ navigation }) {
           headerLeft: () => (
             <TouchableOpacity
               activeOpacity={0.5}
-              onPress={() => navigation.navigate("Home")}
+              onPress={() => {
+                navigation.goBack();
+              }}
             >
               <ArrowIcon style={styles.backArrow} name="arrowleft" size={24} />
             </TouchableOpacity>
@@ -56,7 +61,9 @@ export default function PostsScreen({ navigation }) {
           headerLeft: () => (
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => navigation.navigate("Home")}
+              onPress={() => {
+                navigation.goBack();
+              }}
             >
               <ArrowIcon style={styles.backArrow} name="arrowleft" size={24} />
             </TouchableOpacity>

@@ -35,8 +35,12 @@ export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
       <FlatList
+        style={{
+          marginBottom: 32,
+          height: "100%",
+        }}
         data={posts}
-        keyExtractor={(item, indx) => indx.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View>
             <View style={{ marginTop: 32 }}>

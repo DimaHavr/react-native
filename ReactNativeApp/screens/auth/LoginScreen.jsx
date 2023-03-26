@@ -35,7 +35,6 @@ export default function LoginScreen({ navigation }) {
     }
     Keyboard.dismiss();
     dispatch(authSignInUser(state));
-    // setState(initialState);
   };
 
   return (

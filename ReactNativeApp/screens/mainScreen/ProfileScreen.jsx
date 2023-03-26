@@ -1,5 +1,7 @@
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { db } from "../../firebase/config";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { authSignOutUser } from "../../redux/auth/authOperations";
 import {
   StyleSheet,
@@ -8,18 +10,34 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
+  FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import MapIcon from "react-native-vector-icons/Feather";
 import CommentsIcon from "react-native-vector-icons/Fontisto";
 import LogOutIcon from "react-native-vector-icons/MaterialIcons";
 
-export default function ProfileScreen() {
-  const { login } = useSelector((state) => state.auth);
+export default function ProfileScreen({ navigation }) {
+  const [userPosts, setSetUserPosts] = useState([]);
+  const { login, userId } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const signOut = () => {
     dispatch(authSignOutUser());
   };
+
+  useEffect(() => {
+    const postsRef = collection(db, "posts");
+    const userIdQuery = query(postsRef, where("userId", "==", userId));
+    const unsubscribe = onSnapshot(userIdQuery, (querySnapshot) => {
+      const posts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setSetUserPosts(posts);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <ImageBackground
       style={styles.backgroundImage}
@@ -44,48 +62,68 @@ export default function ProfileScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{login}</Text>
         <View>
-          <View style={styles.postsBox}>
-            <Image style={styles.postImg} />
-            <Text style={styles.textTitle}>Title</Text>
-            <View style={styles.infoBox}>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ ...styles.textInfoBox, marginRight: 24 }}>
-                  <CommentsIcon
-                    style={{ transform: [{ scaleX: -1 }], marginRight: 6 }}
-                    name="comment"
-                    size={25}
-                    color="#FF6C00"
-                  />
-                  <Text style={styles.IconText}>0</Text>
-                </View>
-                <TouchableOpacity style={styles.textInfoBox}>
-                  <Icon
-                    style={{ transform: [{ scaleX: -1 }], marginRight: 6 }}
-                    name="like2"
-                    size={25}
-                    color="#FF6C00"
-                  />
-                  <Text style={styles.IconText}>0</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity style={styles.textInfoBox}>
-                <MapIcon
-                  style={{ marginRight: 6 }}
-                  name="map-pin"
-                  size={25}
-                  color="#BDBDBD"
+          <FlatList
+            data={userPosts}
+            style={{
+              marginBottom: 190,
+            }}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.postsBox}>
+                <Image
+                  source={{ uri: item.photoLink }}
+                  style={styles.postImg}
                 />
-                <Text
-                  style={{
-                    ...styles.textInfo,
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  Ukraine
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+                <Text style={styles.textTitle}>{item.title}</Text>
+                <View style={styles.infoBox}>
+                  <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity
+                      style={{ ...styles.textInfoBox, marginRight: 24 }}
+                    >
+                      <CommentsIcon
+                        style={{ transform: [{ scaleX: -1 }], marginRight: 6 }}
+                        name="comment"
+                        size={25}
+                        color="#FF6C00"
+                      />
+                      <Text style={styles.IconText}>0</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      style={styles.textInfoBox}
+                    >
+                      <Icon
+                        style={{ transform: [{ scaleX: -1 }], marginRight: 6 }}
+                        name="like2"
+                        size={25}
+                        color="#FF6C00"
+                      />
+                      <Text style={styles.IconText}>0</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={styles.textInfoBox}
+                  >
+                    <MapIcon
+                      style={{ marginRight: 6 }}
+                      name="map-pin"
+                      size={25}
+                      color="#BDBDBD"
+                    />
+                    <Text
+                      style={{
+                        ...styles.textInfo,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      Ukraine
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          />
         </View>
       </View>
     </ImageBackground>
@@ -97,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    height: 549,
+    height: 579,
   },
   backgroundImage: {
     position: "relative",
@@ -133,6 +171,7 @@ const styles = StyleSheet.create({
   },
 
   postsBox: {
+    marginBottom: 32,
     marginHorizontal: 16,
   },
   postImg: {

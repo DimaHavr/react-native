@@ -26,11 +26,11 @@ export default function CreatePostsScreen({ navigation }) {
   const { login, userId, email } = useSelector((state) => state.auth);
   const [isTakingPicture, setIsTakingPicture] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
-  const [locationName, setLocationName] = useState({});
+  const [locationName, setLocationName] = useState("");
   const [location, setLocation] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [title, setTitle] = useState("");
-  const postParams = photo && title && locationName;
+  const postParams = photo && title.length && locationName;
   const cameraRef = useRef();
 
   useEffect(() => {

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { StyleSheet } from "react-native";
 
