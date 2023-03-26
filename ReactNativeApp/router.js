@@ -12,84 +12,83 @@ import PlusIcon from "react-native-vector-icons/AntDesign";
 import UserIcon from "react-native-vector-icons/Feather";
 import PostsIcon from "react-native-vector-icons/AntDesign";
 
-export const useRoute = (isAuth) => {
+export const useRoute = (stateChange) => {
+  if (!stateChange) {
+    return (
+      <AuthStack.Navigator>
+        <AuthStack.Screen
+          options={{ headerShown: false }}
+          name="Login"
+          component={LoginScreen}
+        />
+        <AuthStack.Screen
+          options={{ headerShown: false }}
+          name="Registration"
+          component={RegistrationScreen}
+        />
+      </AuthStack.Navigator>
+    );
+  }
   return (
-    <>
-      {!isAuth ? (
-        <AuthStack.Navigator>
-          <AuthStack.Screen
-            options={{ headerShown: false }}
-            name="Login"
-            component={LoginScreen}
-          />
-          <AuthStack.Screen
-            options={{ headerShown: false }}
-            name="Registration"
-            component={RegistrationScreen}
-          />
-        </AuthStack.Navigator>
-      ) : (
-        <MainTab.Navigator
-          initialRouteName="Posts"
-          screenOptions={{
-            tabBarStyle: styles.tabBar,
-            tabBarShowLabel: false,
-          }}
-        >
-          <MainTab.Screen
-            options={{
-              headerShown: false,
-              tabBarIcon: ({ focused, size, color }) => (
-                <View style={focused && styles.icon}>
-                  <PostsIcon
-                    focused={focused}
-                    name="appstore-o"
-                    size={25}
-                    color={focused ? "#ffffff" : "#212121"}
-                  />
-                </View>
-              ),
-            }}
-            name="Posts"
-            component={PostsScreen}
-          />
-          <MainTab.Screen
-            options={{
-              headerTitle: "Создать публикацию",
-              tabBarIcon: ({ focused, size, color }) => (
-                <View style={focused && styles.icon}>
-                  <PlusIcon
-                    focused={focused}
-                    name="plus"
-                    size={25}
-                    color={focused ? "#ffffff" : "#212121"}
-                  />
-                </View>
-              ),
-            }}
-            name="CreatePosts"
-            component={CreatePostsScreen}
-          />
-          <MainTab.Screen
-            options={{
-              headerShown: false,
-              tabBarIcon: ({ focused, size, color }) => (
-                <View style={focused && styles.icon}>
-                  <UserIcon
-                    focused={focused}
-                    name="user"
-                    size={25}
-                    color={focused ? "#ffffff" : "#212121"}
-                  />
-                </View>
-              ),
-            }}
-            name="Profile"
-            component={ProfileScreen}
-          />
-        </MainTab.Navigator>
-      )}
-    </>
+    <MainTab.Navigator
+      initialRouteName="Posts"
+      screenOptions={{
+        tabBarStyle: styles.tabBar,
+        tabBarShowLabel: false,
+      }}
+    >
+      <MainTab.Screen
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, size, color }) => (
+            <View style={focused && styles.icon}>
+              <PostsIcon
+                focused={focused}
+                name="appstore-o"
+                size={25}
+                color={focused ? "#ffffff" : "#212121"}
+              />
+            </View>
+          ),
+        }}
+        name="Posts"
+        component={PostsScreen}
+      />
+      <MainTab.Screen
+        options={{
+          headerTitle: "Создать публикацию",
+          tabBarIcon: ({ focused, size, color }) => (
+            <View style={focused && styles.icon}>
+              <PlusIcon
+                focused={focused}
+                name="plus"
+                size={25}
+                color={focused ? "#ffffff" : "#212121"}
+              />
+            </View>
+          ),
+        }}
+        name="CreatePosts"
+        component={CreatePostsScreen}
+      />
+      <MainTab.Screen
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, size, color }) => (
+            <View style={focused && styles.icon}>
+              <UserIcon
+                focused={focused}
+                name="user"
+                size={25}
+                color={focused ? "#ffffff" : "#212121"}
+              />
+            </View>
+          ),
+        }}
+        name="Profile"
+        component={ProfileScreen}
+      />
+    </MainTab.Navigator>
   );
 };
 

@@ -1,51 +1,65 @@
 import { useState, useEffect } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  Platform,
   Image,
   FlatList,
 } from "react-native";
 import MapIcon from "react-native-vector-icons/Feather";
 import CommentsIcon from "react-native-vector-icons/Fontisto";
 
-export default function Home({ navigation, route }) {
+export default function Home({ navigation }) {
   const [posts, setPosts] = useState([]);
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    const fetchData = async () => {
+      const postsRef = collection(db, "posts");
+
+      const unsubscribe = onSnapshot(postsRef, (snapshot) => {
+        const posts = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPosts(posts);
+      });
+
+      return () => unsubscribe();
+    };
+    fetchData();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <View>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.userBox}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <Image style={styles.userImg} />
-          <View>
-            <Text style={styles.userName}>Natali Romanova</Text>
-            <Text>email@example.com</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
       <FlatList
         data={posts}
         keyExtractor={(item, indx) => indx.toString()}
         renderItem={({ item }) => (
           <View>
+            <View style={{ marginTop: 32 }}>
+              <View style={styles.userBox}>
+                <Image style={styles.userImg} />
+                <View>
+                  <Text style={styles.userName}>{item.login}</Text>
+                  <Text>{item.email}</Text>
+                </View>
+              </View>
+            </View>
             <View style={styles.postsBox}>
-              <Image source={{ uri: item.photo }} style={styles.postImg} />
+              <Image source={{ uri: item.photoLink }} style={styles.postImg} />
               <Text style={styles.textTitle}>{item.title}</Text>
               <View style={styles.infoBox}>
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => navigation.navigate("Comments")}
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      postId: item.id,
+                      photoLink: item.photoLink,
+                    })
+                  }
                   style={styles.textInfoBox}
                 >
                   <CommentsIcon
@@ -67,7 +81,9 @@ export default function Home({ navigation, route }) {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() =>
-                    navigation.navigate("Map", { location: item.location })
+                    navigation.navigate("Map", {
+                      location: item.location,
+                    })
                   }
                   style={{ ...styles.textInfoBox, paddingLeft: 10 }}
                 >
@@ -109,8 +125,7 @@ const styles = StyleSheet.create({
   },
   userBox: {
     marginLeft: 16,
-    marginTop: 32,
-    marginBottom: 32,
+    marginBottom: 16,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -130,7 +145,6 @@ const styles = StyleSheet.create({
   },
   postsBox: {
     marginHorizontal: 16,
-    marginBottom: 16,
   },
   postImg: {
     backgroundColor: "#212121",

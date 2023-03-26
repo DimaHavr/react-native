@@ -1,8 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 import { ActivityIndicator } from "react-native";
-
+import { storage, db } from "../../firebase/config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 import {
   StyleSheet,
   Text,
@@ -20,30 +23,40 @@ import DeleteIcon from "react-native-vector-icons/AntDesign";
 import PhotoIcon from "react-native-vector-icons/MaterialIcons";
 
 export default function CreatePostsScreen({ navigation }) {
+  const { login, userId, email } = useSelector((state) => state.auth);
   const [isTakingPicture, setIsTakingPicture] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [locationName, setLocationName] = useState({});
+  const [location, setLocation] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [title, setTitle] = useState("");
-  const [locationName, setLocationName] = useState({});
-  const [location, setLocation] = useState({});
-  const [isCameraReady, setIsCameraReady] = useState(false);
+  const postParams = photo && title && locationName;
   const cameraRef = useRef();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let locationRes = await Location.getCurrentPositionAsync({});
+      setLocation(locationRes);
+    })();
+  }, []);
+
   const takePhoto = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permission to access location was denied");
-      return;
-    }
     try {
       if (cameraRef.current) {
         setIsTakingPicture(true);
         const options = { quality: 1.0, base64: true, skipProcessing: true };
         const data = await cameraRef.current.takePictureAsync(options);
         const source = data.uri;
+
         if (source) {
-          const location = await Location.getCurrentPositionAsync();
-          const coordsMap = location.coords;
           setPhoto(source);
-          setLocation(coordsMap);
+
           setIsTakingPicture(false);
         }
       }
@@ -51,19 +64,48 @@ export default function CreatePostsScreen({ navigation }) {
       console.log(error);
     }
   };
+
   const onCameraReady = () => {
     setIsCameraReady(true);
   };
-  const postParams = photo && title && locationName;
+
   const sendPost = () => {
-    if (postParams) {
-      navigation.navigate("Home", { photo, title, locationName, location });
-      setPhoto(null);
-      setTitle("");
-      setLocationName("");
-      return;
-    }
+    uploadPostToServer();
+    navigation.navigate("Home");
+    setPhoto(null);
+    setTitle("");
+    setLocationName("");
     return;
+  };
+
+  const uploadPostToServer = async () => {
+    const photoLink = await uploadPhotoToServer();
+    const docRef = await addDoc(collection(db, "posts"), {
+      userId,
+      login,
+      email,
+      photoLink,
+      title,
+      locationName,
+      location: location.coords,
+    });
+
+    console.log("Document written with ID: ", docRef.id);
+  };
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const uniquePostId = Date.now().toString();
+      const storageRef = ref(storage, `postImage/${uniquePostId}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return null;
+    }
   };
 
   return (
@@ -86,7 +128,7 @@ export default function CreatePostsScreen({ navigation }) {
                 />
               ) : (
                 <TouchableOpacity
-                  disabled={!isCameraReady}
+                  disabled={!isCameraReady || isTakingPicture}
                   style={styles.photoIconBox}
                   onPress={takePhoto}
                 >

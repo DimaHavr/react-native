@@ -12,6 +12,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperations";
 const initialState = {
   email: "",
   password: "",
@@ -19,6 +21,7 @@ const initialState = {
 export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
@@ -31,9 +34,8 @@ export default function LoginScreen({ navigation }) {
       return;
     }
     Keyboard.dismiss();
-    setState(initialState);
-    console.log(state);
-    navigation.navigate("Posts");
+    dispatch(authSignInUser(state));
+    // setState(initialState);
   };
 
   return (

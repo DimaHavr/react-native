@@ -11,6 +11,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../redux/auth/authOperations";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const initialState = {
@@ -21,7 +23,7 @@ const initialState = {
 export default function RegistrationScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
-
+  const dispatch = useDispatch();
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
   };
@@ -33,9 +35,7 @@ export default function RegistrationScreen({ navigation }) {
       return;
     }
     Keyboard.dismiss();
-    setState(initialState);
-    console.log(state);
-    navigation.navigate("Home");
+    dispatch(authSignUpUser(state));
   };
 
   return (

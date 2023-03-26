@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../redux/auth/authOperations";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  Platform,
   ImageBackground,
   Image,
 } from "react-native";
@@ -13,7 +14,12 @@ import MapIcon from "react-native-vector-icons/Feather";
 import CommentsIcon from "react-native-vector-icons/Fontisto";
 import LogOutIcon from "react-native-vector-icons/MaterialIcons";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen() {
+  const { login } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <ImageBackground
       style={styles.backgroundImage}
@@ -32,13 +38,11 @@ export default function ProfileScreen({ navigation }) {
         <TouchableOpacity
           style={styles.logOut}
           activeOpacity={0.5}
-          onPress={() => {
-            navigation.navigate("Login");
-          }}
+          onPress={signOut}
         >
           <LogOutIcon name="logout" size={30} color="#BDBDBD" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Natali Romanova</Text>
+        <Text style={styles.headerTitle}>{login}</Text>
         <View>
           <View style={styles.postsBox}>
             <Image style={styles.postImg} />

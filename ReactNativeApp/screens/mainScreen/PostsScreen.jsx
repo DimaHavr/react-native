@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { createStackNavigator } from "@react-navigation/stack";
+import { authSignOutUser } from "../../redux/auth/authOperations";
 
 import {
   StyleSheet,
@@ -16,18 +17,17 @@ import ArrowIcon from "react-native-vector-icons/AntDesign";
 import LogOutIcon from "react-native-vector-icons/MaterialIcons";
 
 export default function PostsScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <NestedStack.Navigator>
       <NestedStack.Screen
         options={{
           headerTitle: "Публикации",
           headerRight: () => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                navigation.navigate("Login");
-              }}
-            >
+            <TouchableOpacity activeOpacity={0.8} onPress={signOut}>
               <LogOutIcon style={styles.logOut} name="logout" size={24} />
             </TouchableOpacity>
           ),
@@ -40,7 +40,7 @@ export default function PostsScreen({ navigation }) {
           headerTitle: "Местоположение",
           headerLeft: () => (
             <TouchableOpacity
-              activeOpacity={0.8}
+              activeOpacity={0.5}
               onPress={() => navigation.navigate("Home")}
             >
               <ArrowIcon style={styles.backArrow} name="arrowleft" size={24} />
