@@ -45,7 +45,7 @@ export default function LoginScreen({ navigation }) {
       >
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS == "ios" ? -245 : 0}
+          keyboardVerticalOffset={-245}
         >
           <View style={styles.container}>
             <Text style={styles.headerTitle}>Войти</Text>
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 32,
     left: 80,
-    fontWeight: 400,
     fontSize: 16,
     lineHeight: 19,
     textAlign: "right",

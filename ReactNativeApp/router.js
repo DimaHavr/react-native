@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import LoginScreen from "./screens/auth/LoginScreen";
 import RegistrationScreen from "./screens/auth/RegistrationScreen";
 import PostsScreen from "./screens/mainScreen/PostsScreen";
@@ -41,7 +41,7 @@ export const useRoute = (stateChange) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
-            <View style={focused && styles.icon}>
+            <View style={focused ? styles.iconFocused : styles.icon}>
               <PostsIcon
                 focused={focused}
                 name="appstore-o"
@@ -58,7 +58,7 @@ export const useRoute = (stateChange) => {
         options={{
           headerTitle: "Создать публикацию",
           tabBarIcon: ({ focused, size, color }) => (
-            <View style={focused && styles.icon}>
+            <View style={focused ? styles.iconFocused : styles.icon}>
               <PlusIcon
                 focused={focused}
                 name="plus"
@@ -75,7 +75,7 @@ export const useRoute = (stateChange) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
-            <View style={focused && styles.icon}>
+            <View style={focused ? styles.iconFocused : styles.icon}>
               <UserIcon
                 focused={focused}
                 name="user"
@@ -94,6 +94,13 @@ export const useRoute = (stateChange) => {
 
 const styles = StyleSheet.create({
   icon: {
+    borderRadius: 20,
+    width: 70,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  iconFocused: {
     backgroundColor: "#FF6C00",
     borderRadius: 20,
     width: 70,
@@ -104,16 +111,12 @@ const styles = StyleSheet.create({
   tabBar: {
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 15,
+    paddingTop: Platform.OS == "ios" ? 15 : 30,
     paddingBottom: 35,
     paddingHorizontal: 60,
   },
   logOut: {
     color: "#BDBDBD",
     paddingRight: 16,
-  },
-  backArrow: {
-    color: "#212121",
-    paddingLeft: 16,
   },
 });

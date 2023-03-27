@@ -46,7 +46,7 @@ export default function RegistrationScreen({ navigation }) {
       >
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -70}
+          keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -250}
         >
           <View style={styles.container}>
             <Text style={styles.headerTitle}>Регистрация</Text>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 32,
     left: 80,
-    fontWeight: 400,
+
     fontSize: 16,
     lineHeight: 19,
     textAlign: "right",

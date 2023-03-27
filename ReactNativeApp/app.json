@@ -16,11 +16,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-       "infoPlist": {
+      "infoPlist": {
         "UIBackgroundModes": [
           "location"
         ],
-        "NSLocationAlwaysAndWhenInUseUsageDescription":"App requires location even when the App is backgrounded."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "App requires location even when the App is backgrounded."
       }
     },
     "android": {
@@ -28,10 +28,26 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION","ACCESS_BACKGROUND_LOCATION"]
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "38cb5ae1-5e45-4a2a-85af-57429a8c1d54"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/38cb5ae1-5e45-4a2a-85af-57429a8c1d54"
     }
   }
 }
