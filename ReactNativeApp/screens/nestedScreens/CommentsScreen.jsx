@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import {
   collection,
@@ -25,9 +26,11 @@ import Icon from "react-native-vector-icons/AntDesign";
 export default function CommentsScreen({ route }) {
   const { postId, photoLink } = route.params;
   const [comment, setComment] = useState("");
+  const [isTakingComment, setIsTakingComment] = useState(false);
   const [allComments, setAllComments] = useState([]);
 
   const createComment = async () => {
+    setIsTakingComment(true);
     const parentDocRef = doc(db, "posts", `${postId}`);
     const subCollectionRef = collection(parentDocRef, "comments");
     await addDoc(subCollectionRef, {
@@ -35,13 +38,14 @@ export default function CommentsScreen({ route }) {
       createdAt: serverTimestamp(),
     });
     setComment("");
+    Keyboard.dismiss();
+    setIsTakingComment(false);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       const parentDocRef = doc(db, "posts", postId);
       const subCollectionRef = collection(parentDocRef, "comments");
-
       const unsubscribe = onSnapshot(subCollectionRef, (snapshot) => {
         const comments = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -60,7 +64,8 @@ export default function CommentsScreen({ route }) {
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS == "ios" ? -190 : -70}
+        keyboardVerticalOffset={Platform.OS == "ios" ? 90 : 90}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <View style={{ height: "100%" }}>
           <View style={{ marginHorizontal: 16 }}>
@@ -68,7 +73,7 @@ export default function CommentsScreen({ route }) {
           </View>
           <SafeAreaView></SafeAreaView>
           <FlatList
-            data={allComments}
+            data={allComments.sort((a, b) => b.createdAt - a.createdAt)}
             style={{
               marginBottom: 50,
               marginTop: 32,
@@ -102,14 +107,22 @@ export default function CommentsScreen({ route }) {
               value={comment}
               onChangeText={(value) => setComment(value)}
             />
-            <TouchableOpacity
-              disabled={!comment}
-              onPress={createComment}
-              activeOpacity={0.5}
-              style={styles.icon}
-            >
-              <Icon name="arrowup" size={25} color="#ffffff" />
-            </TouchableOpacity>
+            {isTakingComment ? (
+              <ActivityIndicator
+                style={styles.photoIconBox}
+                size="large"
+                color="#ffffff"
+              />
+            ) : (
+              <TouchableOpacity
+                disabled={!comment}
+                onPress={createComment}
+                activeOpacity={0.5}
+                style={styles.icon}
+              >
+                <Icon name="arrowup" size={25} color="#ffffff" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </KeyboardAvoidingView>

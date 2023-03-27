@@ -39,7 +39,7 @@ export default function Home({ navigation }) {
           marginBottom: 32,
           height: "100%",
         }}
-        data={posts}
+        data={posts.sort((a, b) => b.createdAt - a.createdAt)}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View>

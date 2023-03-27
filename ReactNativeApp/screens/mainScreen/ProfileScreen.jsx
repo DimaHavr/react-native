@@ -63,7 +63,7 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.headerTitle}>{login}</Text>
         <View>
           <FlatList
-            data={userPosts}
+            data={userPosts.sort((a, b) => b.createdAt - a.createdAt)}
             style={{
               marginBottom: 190,
             }}

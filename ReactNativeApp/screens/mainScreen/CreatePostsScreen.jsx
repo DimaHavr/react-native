@@ -2,10 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
-import { ActivityIndicator } from "react-native";
 import { storage, db } from "../../firebase/config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import {
   StyleSheet,
   Text,
@@ -17,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import MapIcon from "react-native-vector-icons/Feather";
 import DeleteIcon from "react-native-vector-icons/AntDesign";
@@ -25,6 +25,7 @@ import PhotoIcon from "react-native-vector-icons/MaterialIcons";
 export default function CreatePostsScreen({ navigation }) {
   const { login, userId, email } = useSelector((state) => state.auth);
   const [isTakingPicture, setIsTakingPicture] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState();
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [locationName, setLocationName] = useState("");
   const [location, setLocation] = useState(null);
@@ -40,6 +41,8 @@ export default function CreatePostsScreen({ navigation }) {
         setErrorMsg("Permission to access location was denied");
         return;
       }
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === "granted");
 
       let locationRes = await Location.getCurrentPositionAsync({});
       setLocation(locationRes);
@@ -48,7 +51,7 @@ export default function CreatePostsScreen({ navigation }) {
 
   const takePhoto = async () => {
     try {
-      if (cameraRef.current) {
+      if (cameraRef.current && hasCameraPermission) {
         setIsTakingPicture(true);
         const options = { quality: 1.0, base64: true, skipProcessing: true };
         const data = await cameraRef.current.takePictureAsync(options);
@@ -56,7 +59,6 @@ export default function CreatePostsScreen({ navigation }) {
 
         if (source) {
           setPhoto(source);
-
           setIsTakingPicture(false);
         }
       }
@@ -88,6 +90,7 @@ export default function CreatePostsScreen({ navigation }) {
       title,
       locationName,
       location: location.coords,
+      createdAt: serverTimestamp(),
     });
 
     console.log("Document written with ID: ", docRef.id);
